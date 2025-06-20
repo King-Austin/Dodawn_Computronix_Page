@@ -47,7 +47,7 @@ export default function HeroSection({ onGetQuote }) {
               </h1>
 
               <p className="text-xl text-gray-300 leading-relaxed max-w-lg">
-                Nigeria's premier solar installation and CCTV security systems provider. 
+                Anambra's premier solar installation and CCTV security systems provider from Dodawn Computronix.
                 Powering homes and businesses while keeping them secure across Lagos, Abuja, and beyond.
               </p>
 

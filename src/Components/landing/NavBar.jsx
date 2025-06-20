@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../components/ui/button';
 import { 
@@ -14,9 +15,10 @@ import {
   MessageCircle
 } from 'lucide-react';
 
-export default function Navbar({ onGetQuote, onScrollToSection }) {
+export default function Navbar({ onGetQuote }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,12 +28,56 @@ export default function Navbar({ onGetQuote, onScrollToSection }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu when changing routes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location]);
+
   const navLinks = [
-    { name: 'Home', icon: Home, action: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
-    { name: 'Services', icon: Settings, action: () => onScrollToSection('services') },
-    { name: 'About', icon: Users, action: () => onScrollToSection('about') },
-    { name: 'Contact', icon: MessageCircle, action: () => onScrollToSection('contact') }
+    { name: 'Home', icon: Home, path: '/' },
+    { name: 'Services', icon: Settings, path: '/services' },
+    { name: 'About', icon: Users, path: '/about' },
+    { name: 'Contact', icon: MessageCircle, path: '/contact' }
   ];
+
+  const serviceLinks = [
+    { name: 'Residential Solar', path: '/services#residential-solar' },
+    { name: 'Commercial Solar', path: '/services#commercial-solar' },
+    { name: 'Solar Panels & Inverters', path: '/services#solar-panels-inverters' },
+    { name: 'Solar Boreholes', path: '/services#solar-boreholes' },
+    { name: 'Solar Street Lights', path: '/services#solar-streetlights' },
+    { name: 'Electrical Installation', path: '/services#electrical-installation' },
+    { name: 'CCTV Installation', path: '/services#cctv-installation' },
+    { name: 'Security Systems', path: '/services#security-systems' },
+  ];
+
+  // Check if the current path matches the link's path
+  const isActive = (path) => {
+    if (path.includes('#')) {
+      // For hash links, check if the base path matches
+      const basePath = path.split('#')[0];
+      return location.pathname === basePath;
+    }
+    return location.pathname === path;
+  };
+
+  // Helper to handle scrolling to hash on the same page
+  const handleNavClick = (path) => {
+    if (path.includes('#')) {
+      const [basePath, hash] = path.split('#');
+      
+      // If we're already on the correct base path, just scroll to the element
+      if (location.pathname === basePath || (basePath === '/' && location.pathname === '')) {
+        const element = document.getElementById(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+        return;
+      }
+    }
+    
+    // Otherwise, normal navigation will occur via the Link component
+  };
 
   return (
     <>
@@ -39,7 +85,7 @@ export default function Navbar({ onGetQuote, onScrollToSection }) {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled 
+          isScrolled || location.pathname !== '/'
             ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50' 
             : 'bg-transparent'
         }`}
@@ -51,96 +97,104 @@ export default function Navbar({ onGetQuote, onScrollToSection }) {
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex items-center gap-3 cursor-pointer"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
-              <div className="relative">
-                <div className="flex items-center gap-2">
-                  <div className="relative">
-                    <Sun className={`w-8 h-8 transition-colors duration-300 ${
-                      isScrolled ? 'text-orange-500' : 'text-orange-400'
-                    }`} />
-                    <div className="absolute inset-0 animate-pulse">
-                      <Sun className="w-8 h-8 text-orange-300 opacity-50" />
+              <Link to="/" className="flex items-center gap-3">
+                <div className="relative">
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <Sun className={`w-8 h-8 transition-colors duration-300 ${
+                        isScrolled || location.pathname !== '/' ? 'text-orange-500' : 'text-orange-400'
+                      }`} />
+                      <div className="absolute inset-0 animate-pulse">
+                        <Sun className="w-8 h-8 text-orange-300 opacity-50" />
+                      </div>
                     </div>
+                    <Shield className={`w-8 h-8 transition-colors duration-300 ${
+                      isScrolled || location.pathname !== '/' ? 'text-blue-500' : 'text-blue-400'
+                    }`} />
                   </div>
-                  <Shield className={`w-8 h-8 transition-colors duration-300 ${
-                    isScrolled ? 'text-blue-500' : 'text-blue-400'
-                  }`} />
                 </div>
-              </div>
-              <div>
-                <h1 className={`text-xl font-bold transition-colors duration-300 ${
-                  isScrolled ? 'text-slate-900' : 'text-white'
-                }`}>
-                  SolarSecurity
-                </h1>
-                <p className={`text-xs transition-colors duration-300 ${
-                  isScrolled ? 'text-gray-600' : 'text-gray-300'
-                }`}>
-                  Nigeria
-                </p>
-              </div>
+                <div>
+                  <h1 className={`text-xl font-bold transition-colors duration-300 ${
+                    isScrolled || location.pathname !== '/' ? 'text-slate-900' : 'text-white'
+                  }`}>
+                    Dodawn Computronix
+                  </h1>
+                  <p className={`text-xs transition-colors duration-300 ${
+                    isScrolled || location.pathname !== '/' ? 'text-gray-600' : 'text-gray-300'
+                  }`}>
+                    Awka, Anambra State
+                  </p>
+                </div>
+              </Link>
             </motion.div>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-8">
               {navLinks.map((link) => (
-                <motion.button
-                  key={link.name}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={link.action}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                    isScrolled 
-                      ? 'text-gray-700 hover:text-orange-600 hover:bg-orange-50' 
-                      : 'text-white/90 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  <link.icon className="w-4 h-4" />
-                  {link.name}
-                </motion.button>
+                <div key={link.name} className="relative group">
+                  <Link 
+                    to={link.path}
+                    onClick={() => handleNavClick(link.path)}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                        isScrolled || location.pathname !== '/' 
+                          ? isActive(link.path)
+                            ? 'text-orange-600 bg-orange-50'
+                            : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50' 
+                          : isActive(link.path)
+                            ? 'text-white bg-white/20'
+                            : 'text-white/90 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <link.icon className="w-4 h-4" />
+                      {link.name}
+                    </motion.div>
+                  </Link>
+                  
+                  {/* Service Dropdown */}
+                  {link.name === 'Services' && (
+                    <div className="absolute left-0 mt-2 w-56 rounded-xl overflow-hidden bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-left z-50">
+                      <div className="py-1">
+                        {serviceLinks.map((serviceLink) => (
+                          <Link
+                            key={serviceLink.name}
+                            to={serviceLink.path}
+                            onClick={() => handleNavClick(serviceLink.path)}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors duration-200"
+                          >
+                            {serviceLink.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               ))}
-            </div>
-
-            {/* Desktop CTA Buttons */}
-            <div className="hidden lg:flex items-center gap-4">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  className={`border-2 font-semibold transition-all duration-300 ${
-                    isScrolled 
-                      ? 'border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-600 hover:bg-orange-50' 
-                      : 'border-white/30 text-white hover:bg-white hover:text-slate-900'
-                  }`}
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Call Now
-                </Button>
-              </motion.div>
               
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={onGetQuote}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold px-6 py-2 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  Get Quote
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              </motion.div>
+              <Button 
+                onClick={onGetQuote || (() => window.location.href = '/contact')}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl shadow-lg shadow-orange-500/20 hover:shadow-orange-600/30 transition-all duration-300"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                Get Quote
+              </Button>
             </div>
 
             {/* Mobile Menu Button */}
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+            <button 
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-full bg-white/10 text-slate-700"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`lg:hidden p-2 rounded-xl transition-all duration-300 ${
-                isScrolled 
-                  ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-white hover:bg-white/10'
-              }`}
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </motion.button>
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
           </div>
         </div>
       </motion.nav>
@@ -149,48 +203,53 @@ export default function Navbar({ onGetQuote, onScrollToSection }) {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="fixed top-20 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/50 lg:hidden"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="lg:hidden fixed top-20 left-0 right-0 z-40 bg-white shadow-xl border-b border-gray-200"
           >
             <div className="container mx-auto px-4 py-6">
-              <div className="space-y-4">
-                {navLinks.map((link, index) => (
-                  <motion.button
-                    key={link.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    onClick={() => {
-                      link.action();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-left text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all duration-300"
-                  >
-                    <link.icon className="w-5 h-5" />
-                    <span className="font-medium">{link.name}</span>
-                  </motion.button>
+              <div className="flex flex-col space-y-3">
+                {navLinks.map((link) => (
+                  <div key={link.name}>
+                    <Link
+                      to={link.path}
+                      onClick={() => handleNavClick(link.path)}
+                      className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                        isActive(link.path)
+                          ? 'bg-orange-50 text-orange-600'
+                          : 'text-slate-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <link.icon className="w-5 h-5" />
+                      <span className="font-medium">{link.name}</span>
+                      <ArrowRight className="w-4 h-4 ml-auto" />
+                    </Link>
+                    
+                    {/* Service Dropdown for Mobile */}
+                    {link.name === 'Services' && (
+                      <div className="ml-8 mt-2 space-y-2 border-l-2 border-gray-100 pl-4">
+                        {serviceLinks.map((serviceLink) => (
+                          <Link
+                            key={serviceLink.name}
+                            to={serviceLink.path}
+                            onClick={() => handleNavClick(serviceLink.path)}
+                            className="block py-2 text-sm text-gray-700 hover:text-orange-600 transition-colors"
+                          >
+                            {serviceLink.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
-                
-                <div className="border-t border-gray-200 pt-4 space-y-3">
-                  <Button
-                    variant="outline"
-                    className="w-full border-2 border-gray-300 text-gray-700 hover:border-orange-500 hover:text-orange-600 hover:bg-orange-50 font-semibold"
+                <div className="pt-3 border-t border-gray-100">
+                  <Button 
+                    onClick={onGetQuote || (() => window.location.href = '/contact')}
+                    className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl"
                   >
                     <Phone className="w-4 h-4 mr-2" />
-                    Call Now
-                  </Button>
-                  
-                  <Button
-                    onClick={() => {
-                      onGetQuote();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    Get Free Quote
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    Get a Free Quote
                   </Button>
                 </div>
               </div>

@@ -1,7 +1,10 @@
 import React from 'react';
 import { Sun, Shield, Phone, Mail, MapPin } from 'lucide-react';
+import { useCookiePolicy } from '../../context/CookiePolicyContext';
 
 export default function FooterSection() {
+  const { togglePolicy } = useCookiePolicy();
+  
   return (
     <footer className="bg-slate-900 text-white py-16">
       <div className="container mx-auto px-4">
@@ -16,8 +19,8 @@ export default function FooterSection() {
                   <Shield className="w-8 h-8 text-blue-500" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold">SolarSecurity</h3>
-                  <p className="text-gray-400 text-sm">Nigeria</p>
+                  <h3 className="text-2xl font-bold">Dodawn Computronix</h3>
+                  <p className="text-gray-400 text-sm">Awka, Anambra State</p>
                 </div>
               </div>
               <p className="text-gray-300 leading-relaxed mb-6 max-w-md">
@@ -56,21 +59,20 @@ export default function FooterSection() {
                 <div className="flex items-center gap-3">
                   <Phone className="w-5 h-5 text-orange-500 flex-shrink-0" />
                   <div className="text-sm">
-                    <p>+234 803 123 4567</p>
-                    <p>+234 701 234 5678</p>
+                    <p>+2348038793533</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-blue-500 flex-shrink-0" />
                   <div className="text-sm">
-                    <p>info@solarsecurity.ng</p>
+                    <p>dodawnelectronics@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-green-500 flex-shrink-0 mt-1" />
                   <div className="text-sm">
-                    <p>123 Victoria Island,</p>
-                    <p>Lagos, Nigeria</p>
+                    <p>94 Arthur Eze Avenue,</p>
+                    <p>Awka, Anambra State.</p>
                   </div>
                 </div>
               </div>
@@ -81,12 +83,17 @@ export default function FooterSection() {
           <div className="border-t border-white/20 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-400 text-sm text-center md:text-left">
-                © 2024 SolarSecurity Nigeria. All rights reserved.
+                © 2025 Dodawn Computronix. All rights reserved. CEO: Engr Dozie Ekwunife
               </p>
               <div className="flex gap-6 text-sm">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">Cookie Policy</a>
+                <button 
+                  onClick={togglePolicy}
+                  className="text-gray-400 hover:text-white transition-colors text-sm bg-transparent border-none cursor-pointer"
+                >
+                  Cookie Policy
+                </button>
               </div>
             </div>
           </div>

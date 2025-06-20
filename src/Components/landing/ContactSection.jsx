@@ -20,32 +20,52 @@ export default function ContactSection() {
     name: '',
     email: '',
     phone: '',
-    service_type: 'solar_installation',
-    property_type: 'residential',
+    service_type: '',
+    property_type: '',
     location: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear any error for this field
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = 'Name is required';
+    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.phone) newErrors.phone = 'Phone number is required';
+    if (!formData.service_type) newErrors.service_type = 'Service type is required';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) return;
+    
     setIsSubmitting(true);
     
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('Form submitted:', formData);
       setSubmitSuccess(true);
-      setFormData(ContactInquiryData.initialData || {
+      setFormData({
         name: '',
         email: '',
         phone: '',
-        service_type: 'solar_installation',
-        property_type: 'residential',
+        service_type: '',
+        property_type: '',
         location: '',
         message: ''
       });
@@ -130,9 +150,10 @@ export default function ContactSection() {
                           required
                           value={formData.name}
                           onChange={(e) => handleInputChange('name', e.target.value)}
-                          className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                          className={`rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500 ${errors.name ? 'border-red-500' : ''}`}
                           placeholder="Enter your full name"
                         />
+                        {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
@@ -140,9 +161,10 @@ export default function ContactSection() {
                           required
                           value={formData.phone}
                           onChange={(e) => handleInputChange('phone', e.target.value)}
-                          className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                          className={`rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500 ${errors.phone ? 'border-red-500' : ''}`}
                           placeholder="+234 xxx xxx xxxx"
                         />
+                        {errors.phone && <p className="mt-1 text-sm text-red-500">{errors.phone}</p>}
                       </div>
                     </div>
                     
@@ -153,17 +175,27 @@ export default function ContactSection() {
                         required
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                        className={`rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500 ${errors.email ? 'border-red-500' : ''}`}
                         placeholder="your.email@example.com"
                       />
+                      {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Service Required *</label>
-                        <Select value={formData.service_type} onValueChange={(value) => handleInputChange('service_type', value)}>
-                          <SelectTrigger className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500">
-                            <SelectValue placeholder="Select service" />
+                        <Select 
+                          value={formData.service_type} 
+                          onValueChange={(value) => handleInputChange('service_type', value)}
+                          required
+                        >
+                          <SelectTrigger className={`rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500 ${errors.service_type ? 'border-red-500' : ''}`}>
+                            <SelectValue placeholder="Select service">
+                              {formData.service_type === 'solar_installation' && 'Solar Installation'}
+                              {formData.service_type === 'cctv_installation' && 'CCTV Installation'}
+                              {formData.service_type === 'both' && 'Both Services'}
+                              {formData.service_type === 'consultation' && 'Consultation Only'}
+                            </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="solar_installation">Solar Installation</SelectItem>
@@ -172,12 +204,20 @@ export default function ContactSection() {
                             <SelectItem value="consultation">Consultation Only</SelectItem>
                           </SelectContent>
                         </Select>
+                        {errors.service_type && <p className="mt-1 text-sm text-red-500">{errors.service_type}</p>}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
-                        <Select value={formData.property_type} onValueChange={(value) => handleInputChange('property_type', value)}>
+                        <Select 
+                          value={formData.property_type} 
+                          onValueChange={(value) => handleInputChange('property_type', value)}
+                        >
                           <SelectTrigger className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500">
-                            <SelectValue placeholder="Select property type" />
+                            <SelectValue placeholder="Select property type">
+                              {formData.property_type === 'residential' && 'Residential'}
+                              {formData.property_type === 'commercial' && 'Commercial'}
+                              {formData.property_type === 'industrial' && 'Industrial'}
+                            </SelectValue>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="residential">Residential</SelectItem>
@@ -199,96 +239,100 @@ export default function ContactSection() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Project Details</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
                       <Textarea
                         value={formData.message}
                         onChange={(e) => handleInputChange('message', e.target.value)}
-                        className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500 min-h-[120px]"
-                        placeholder="Tell us about your project requirements, budget range, timeline, etc."
+                        className="rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                        placeholder="Tell us about your project and requirements..."
+                        rows={4}
                       />
                     </div>
 
                     <Button
                       type="submit"
+                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl py-3"
                       disabled={isSubmitting}
-                      className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       {isSubmitting ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Sending...
+                        <div className="flex items-center justify-center">
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                          Processing...
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2">
-                          <Send className="w-5 h-5" />
-                          Send Quote Request
-                        </div>
+                        <>
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Message
+                        </>
                       )}
                     </Button>
                   </form>
                 </CardContent>
               </Card>
             </motion.div>
-
+            
             {/* Contact Info */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="space-y-8"
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="flex flex-col justify-center"
             >
-              <div>
-                <h3 className="text-2xl font-bold text-slate-900 mb-6">Get In Touch</h3>
-                <p className="text-gray-600 text-lg leading-relaxed mb-8">
-                  We're here to help you harness the power of the sun and secure your property. 
-                  Our expert team is ready to provide you with customized solutions that meet your specific needs.
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-start gap-4 p-6 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-2xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Call Us</h4>
-                    <p className="text-gray-600">+234 803 123 4567</p>
-                    <p className="text-gray-600">+234 701 234 5678</p>
+              <div className="space-y-10">
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-6">Contact Information</h3>
+                  <div className="space-y-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="bg-orange-100 rounded-xl p-3">
+                        <Phone className="w-6 h-6 text-orange-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-900">Phone</h4>
+                        <p className="text-gray-600">+234 812 345 6789</p>
+                        <p className="text-gray-600">+234 901 234 5678</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-4">
+                      <div className="bg-blue-100 rounded-xl p-3">
+                        <Mail className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-900">Email</h4>
+                        <p className="text-gray-600">info@dodawncomputronix.com</p>
+                        <p className="text-gray-600">support@dodawncomputronix.com</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-4">
+                      <div className="bg-green-100 rounded-xl p-3">
+                        <MapPin className="w-6 h-6 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-900">Office Address</h4>
+                        <p className="text-gray-600">123 Solar Avenue, Awka</p>
+                        <p className="text-gray-600">Anambra State, Nigeria</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start space-x-4">
+                      <div className="bg-purple-100 rounded-xl p-3">
+                        <Clock className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-900">Business Hours</h4>
+                        <p className="text-gray-600">Monday - Friday: 8:00 AM - 6:00 PM</p>
+                        <p className="text-gray-600">Saturday: 9:00 AM - 3:00 PM</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <div className="flex items-start gap-4 p-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Email Us</h4>
-                    <p className="text-gray-600">info@solarsecurity.ng</p>
-                    <p className="text-gray-600">quotes@solarsecurity.ng</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Visit Our Office</h4>
-                    <p className="text-gray-600">123 Victoria Island,</p>
-                    <p className="text-gray-600">Lagos, Nigeria</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Business Hours</h4>
-                    <p className="text-gray-600">Mon - Fri: 8:00 AM - 6:00 PM</p>
-                    <p className="text-gray-600">Sat: 9:00 AM - 4:00 PM</p>
-                    <p className="text-gray-600">Emergency: 24/7 Available</p>
+                
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-6">Our Location</h3>
+                  <div className="bg-gray-200 rounded-3xl overflow-hidden h-[250px] flex items-center justify-center">
+                    <p className="text-gray-500">Google Map Integration Coming Soon</p>
                   </div>
                 </div>
               </div>
