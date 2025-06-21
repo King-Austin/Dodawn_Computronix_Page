@@ -109,9 +109,7 @@ export default function Navbar({ onGetQuote }) {
                         <Sun className="w-8 h-8 text-orange-300 opacity-50" />
                       </div>
                     </div>
-                    <Shield className={`w-8 h-8 transition-colors duration-300 ${
-                      isScrolled || location.pathname !== '/' ? 'text-blue-500' : 'text-blue-400'
-                    }`} />
+
                   </div>
                 </div>
                 <div>
@@ -120,11 +118,7 @@ export default function Navbar({ onGetQuote }) {
                   }`}>
                     Dodawn Computronix
                   </h1>
-                  <p className={`text-xs transition-colors duration-300 ${
-                    isScrolled || location.pathname !== '/' ? 'text-gray-600' : 'text-gray-300'
-                  }`}>
-                    Awka, Anambra State
-                  </p>
+
                 </div>
               </Link>
             </motion.div>
