@@ -289,8 +289,7 @@ export default function ContactSection() {
                       </div>
                       <div>
                         <h4 className="font-medium text-slate-900">Phone</h4>
-                        <p className="text-gray-600">+234 812 345 6789</p>
-                        <p className="text-gray-600">+234 901 234 5678</p>
+                        <p className="text-gray-600">+2348038793533</p>
                       </div>
                     </div>
                     
@@ -300,8 +299,7 @@ export default function ContactSection() {
                       </div>
                       <div>
                         <h4 className="font-medium text-slate-900">Email</h4>
-                        <p className="text-gray-600">info@dodawncomputronix.com</p>
-                        <p className="text-gray-600">support@dodawncomputronix.com</p>
+                        <p className="text-gray-600">dodawnelectronics@gmail.com</p>
                       </div>
                     </div>
                     
@@ -311,7 +309,7 @@ export default function ContactSection() {
                       </div>
                       <div>
                         <h4 className="font-medium text-slate-900">Office Address</h4>
-                        <p className="text-gray-600">123 Solar Avenue, Awka</p>
+                        <p className="text-gray-600">94 Arthur Eze Avenue.</p>
                         <p className="text-gray-600">Anambra State, Nigeria</p>
                       </div>
                     </div>
